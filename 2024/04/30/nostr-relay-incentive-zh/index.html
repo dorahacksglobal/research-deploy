@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="en" prefix="og: http://ogp.me/ns#"><head><meta charset="utf-8"><title>Nostr中继网络的可用性和可靠性优化 · WendyDing @YakiHonne.com · Dora Research Blog</title><meta name="title" content="Nostr中继网络的可用性和可靠性优化 · WendyDing @YakiHonne.com · Dora Research Blog"><meta name="description" content="Nostr的中继系统需要持久稳定的激励模型，这篇文章讨论了如何设计和实现这种模型"><meta name="keywords" content="doraresearch,dora,research,hackathon,dao,governance,economics,blockchain,hackerlink,quadratic,continuous,funding,daorayaki,english,chinese"><meta name="viewport" content="width=device-width, viewport-fit=cover,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Dora Research"><meta name="theme-color" content="#110920"><meta name="format-detection" content="telephone=no"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><link rel="shortcut icon" href="../../../../assets/favicon.ico?v=0.10.0"><link rel="icon" sizes="16x16 24x24 32x32 48x48 64x64" href="../../../../assets/favicon.ico?v=0.10.0"><link rel="icon" sizes="128x128" href="../../../../assets/favicon-128.png?v=0.10.0"><link rel="icon" sizes="192x192" href="../../../../assets/favicon-192.png?v=0.10.0"><link rel="icon" sizes="196x196" href="../../../../assets/favicon-196.png?v=0.10.0"><link rel="apple-touch-icon" href="../../../../assets/favicon-180.png?v=0.10.0"><link rel="apple-touch-icon" sizes="120x120" href="../../../../assets/favicon-120.png?v=0.10.0"><link rel="apple-touch-icon" sizes="152x152" href="../../../../assets/favicon-152.png?v=0.10.0"><link rel="apple-touch-icon" sizes="167x167" href="../../../../assets/favicon-167.png?v=0.10.0"><link rel="apple-touch-icon" sizes="180x180" href="../../../../assets/favicon-180.png?v=0.10.0"><meta name="msapplication-TileColor" content="#110920"><meta name="msapplication-TileImage" content="../../../../assets/favicon-144.png?v=0.10.0"><meta name="application-name" content="Dora Research"><meta name="msapplication-tooltip" content="Dora Research"><meta name="msapplication-config" content="../../../../assets/ieconfig.xml?v=0.10.0"><link rel="manifest" href="../../../../assets/manifest.json?v=0.10.0"><link rel="preload" href="../../../../assets/IBMPlexSans-Text.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../../../assets/IBMPlexSans-TextItalic.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../../../assets/IBMPlexSans-SemiBold.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../../../assets/IBMPlexSans-SemiBoldItalic.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../../../assets/IBMPlexSans-Bold.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../../../assets/IBMPlexSans-BoldItalic.woff2?v=3.004" as="font" type="font/woff2" crossorigin><meta property="og:type" content="blog"><meta property="og:locale" content="en"><meta property="og:image" content="https://research.dorahacks.io/assets/og-image.png?v=0.10.0"><meta property="og:site_name" content="Dora Research"><meta property="og:title" content="Nostr中继网络的可用性和可靠性优化"><meta property="og:url" content="https://research.dorahacks.io/2024/04/30/nostr-relay-incentive-zh/"><meta property="og:description" content="Nostr的中继系统需要持久稳定的激励模型，这篇文章讨论了如何设计和实现这种模型"><meta property="article:published_time" content="2024-04-30T00:00:00.000Z"><meta property="article:modified_time" content="2024-04-30T00:00:00.000Z"><meta property="article:author" content="WendyDing @YakiHonne.com"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@DoraFactory"><link rel="stylesheet" href="../../../../assets/app.css?v=0.10.0"><script async src="https://www.googletagmanager.com/gtag/js?id=G-1H2ZDKGN1G"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-1H2ZDKGN1G');
+gtag('config', 'G-25T206R38K');</script><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body class="post"><main role="main"><article class="post-article grid-main"><header class="post-header typography typography--zh"><h1 class="post-title">Nostr中继网络的可用性和可靠性优化</h1><div class="post-metadata"><p class="post-date"><time datetime="2024-04-30T00:00:00.000Z">30 Apr 2024</time></p><p class="post-author">WendyDing @YakiHonne.com</p></div></header><section class="post-body typography typography--zh" lang="en"><p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com">YakiHonne</a>  致力于构建一个抗审查的去中心化媒体。一个足够去中心化且不可篡改的存储层是实现这个目标的关键。基于<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/nostr-protocol/nostr">Nostr协议</a>的Relay网络提供了一个优秀的抗审查存储解决方案。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nostr.com/relays">Relay</a>在消息存储和广播中充当着中介的角色，用户可以自主托管Relay，并自由选择在哪些中继上广播信息或忽略某些中继。当某个Relay拒绝服务或者被关闭时，其他Relay可以继续传播该信息(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://fiatjaf.com/nostr.html">fiatjaf.2019</a>)。这种机制，使得<a target="_blank" rel="noopener external nofollow noreferrer" href="https://en.wikipedia.org/wiki/Shadow_banning">影子禁令</a>成为了“打地鼠游戏”，试图从某个数据源将用户屏蔽变得几乎不可能，为许多争议人士和内容提供了言论自由的空间。</p>
+<p>尽管Relay为解决媒体审查和内容删除问题提供了一个简单有效的技术方案，但现有的Relay网络面临着两个主要的问题。首先，Relay网络缺乏激励，这导致其稳定性和可用性不足。抗审查网络依赖于众多分散的可用Relay和Relay的更广泛的使用来保证信息的自由流通（<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/article/rabble@nos.social/Why-has-Bluesky-grown-bigger-than-Nostr-w3eb29">Rabble,2024</a>)。其次，尽管Relay的核心职能是去中心化地存储和分发信息，它们本身无法保证信息的绝对不可篡改。Relay节点有能力篡改或删除信息。因此，本文将重点探讨如何通过引入经济激励和证明机制解决以上这两个问题，从而加强Relay网络的可用性和可靠性，确保其为去中心化媒体提供坚实的支持。</p>
+<h2 id="一、Nostr是去中心化的">一、Nostr是去中心化的</h2>
+<p>Nostr 的设计核心是用户账户、中继及客户端相互分离，不受任何实体的控制和审查。用户可以自主托管Relay，内容可以在多个中继上存储和检索。即便某些Relay拒绝服务或被关闭，其他Relay依然可以继续存储和传播信息。这与Fediverse 应用如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nostr.com/comparisons/mastodon">Mastodon</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://bsky.social/about/blog/5-5-2023-federation-architecture">Bluesky</a>及其他Web3协议如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.farcaster.xyz/learn/architecture/overview">Farcaster</a>不同。</p>
+<ul>
+<li>在Mastodon中，用户账户与管理员控制的服务器绑定。因此，实例所有者可以禁止用户就像 Twitter一样，他们也有权阻止其他实例，从而实施审查 (<a target="_blank" rel="noopener external nofollow noreferrer" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4213674">Rozenshtein,2023</a>)。</li>
+<li>尽管Bluesky宣传自己是一个开放和去中心化的网络，实际上是被误导的（<a target="_blank" rel="noopener external nofollow noreferrer" href="https://fiatjaf.com/ab1127fb.html">Fiatjaf:Bluesky, 2023</a>)：Bluesky直接控制atproto协议，这使得 Bluesky 可随时更改协议；Bluesky的身份系统依赖于中心服务器来维护和认证全球ID，这一系统允许Bluesky控制并潜在地禁止任何用户；即使用户可以自行托管内容，所有内容都必须通过Bluesky的中心服务器进行分发。此外，Bluesky的设计并不鼓励或支持与其他网络提供商的有效互操作性。这意味着如果用户对Bluesky不满意，其选择非常有限。</li>
+<li>Farcaster 依赖大型中心 (<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.farcaster.xyz/learn/architecture/hubs">Hubs</a>) 来存储所有用户的数据，这些Hub具有数据的审查和传播权。随着网络扩展，Hub的存储需求和成本激增。据估计，若Farcaster的日活用户每周增长5%，到2024年，运行一个Hub的成本将达到3500美元/年，到2027年将飙升至690万美元/年(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://hackmd.io/@farcasterxyz/ry0QL4M4o">Varun,2022</a>)。高昂的运营成本使得只有少数公司能运营Hub，导致Hub数量减少和网络中心化的风险增加。同时，Hub运营者可能合谋或串通，降低某些内容的优先级或对其进行审查(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://hackmd.io/@farcasterxyz/ry0QL4M4o">Varun,2022</a>)。与此相反，Nostr鼓励大型Hub与为特定目的构建的小型中继之间的混合使用,如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F1.png">图1</a>所示。这些小型中继可以由大型出版商、小组织或极客建立，保持网络的去中心化和开放性(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/article/naddr1qq2hxenh2cchynnpdag4sepkx4gxyj2dt9nk6q3qjlrs53pkdfjnts29kveljul2sm0actt6n8dxrrzqcersttvcuv3qxpqqqp65wd3a9ny">Hodlbod:Outbox,2024</a>)。</li>
+</ul>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F1.png" alt="" loading="lazy"><figcaption>图1. <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.farcaster.xyz/learn/architecture/hubs">Farcaster Hub</a> vs Nostr Relay</figcaption></figure>
+<p>事实上也是如此。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://arxiv.org/html/2402.05709v1#S6">Gareth Tyson等</a>，以2023 年 7 月 1 日至 2023 年 12 月 31 日的 1780 万帖子、150 万 pubkey（用户）和 712 个中继的数据集为样本对Nostr的去中心化程度进行分析，发现帖子和用户在中继上的分布及中继托管分布表现出极高的去中心化程度。这证明了Nostr协议的技术结构优于现有的所有去中心化媒体协议的设计。</p>
+<ul>
+<li>帖子和用户并没有高度的集中在个别Relay，而是广泛分布，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F2.png">图2</a>所示。大多数（93%）帖子可以在多个中继中找到，有 178 个中继（25%）分别托管了大量（超过 5%）的帖子。根据用户数量统计，即便关闭流量前50的Relay，依然有90%的内容可以被访问；而根据帖子数量统计，关闭帖子数量前30的Relay后，仍有超过90%的内容保持可访问。即使移除前50个Relay，也有71%的内容仍可被访问，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F3.png">图3.1</a>所示。这种去中心化程度远优于Fediverse 的应用。</li>
+</ul>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F2.png" alt="" loading="lazy"><figcaption>图2. 根据中继用户数排名，前15个地区和自治系统中的中继、帖子和用户的比例。 来源: Gareth Tyson et al. (2024), "Exploring the Nostr Ecosystem: A Study of Decentralization and Resilience," arXiv preprint arXiv:2402.05709</figcaption></figure>
+<ul>
+<li>中继托管地域及自治系统分布的去中心化。中继分布在 50个国家和 151 个自治系统中，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F4.png">图4</a>所示。令人惊讶的是，没有单个国家或自治系统托管超过25% 的中继。超过80%的帖子在移除前10个自治系统后仍然可用，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F3.png">图3.2</a>所示。以Mastodon为例(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://doi.org/10.1145/3355369.3355572">Raman et al., 2019</a>)，在移除托管实例的前10个自治系统后，帖子可用性下降至不到10%。这主要是由于Nostr的中继在不同AS中的分布更均匀，使它们对单个AS故障的抵抗力更强。</li>
+</ul>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F3.png" alt="" loading="lazy"><figcaption>图3.1.移除前X Relays; 图3.2.移除前X自治系统. 来源: 见图2</figcaption></figure>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F4.png" alt="" loading="lazy"><figcaption>图4.不同国家Relay数量分布(数据来自Nostr.Watch)</figcaption></figure>
+<h2 id="二、Relay的可用性分析">二、Relay的可用性分析</h2>
+<p>Relay是Nostr去中心化的灵魂。要构建一个真正抗审查的Relay网络，需要满足两个条件：Relay节点必须足够分散和可用，以确保信息可以自由地存储和传播；即使是小规模的Relay节点也应广泛发现和使用。</p>
+<p>截至2024年4月23日，全球仅有<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nostr.watch/relays/find">639</a>个Relay在线，<strong>比去年同期减少了三分之二</strong>，主要分布在北美和欧洲，这两大洲Relay占总数的<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nostr.watch/relays/statistics">80%</a>。此外，由于网络条件的差异，不同地区的Relay性能也有显著的不同，例如在新加坡测试时会发现亚洲、北美和欧洲的Relay响应速度差异较大，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://hackmd.io/_uploads/H15C4XRWC.png">图5</a>所示。此外，Relay头部效应明显，排名第一的Relay托管了73%的帖子。尽管这些贴子在多个Relay中都可以被找到，Nostr依然是最为去中心化的(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://fiatjaf.com/87a208d9.html">fiatjaf:Nostr,2024</a>)。但这种集中使用不利于小relay节点被广泛的发现和使用或者是用户被关注和发现，降低了小节点建设Relay的动力，尤其是在生态缺乏激励的情况下。</p>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F5.png" alt="" loading="lazy"><figcaption>图.5 Relay可用性测试 (数据来自Nostr.Watch).</figcaption></figure>
+<ul>
+<li>Relay数量减少及不足够稳定的背后原因是缺乏有效的经济激励(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://bitcoinmagazine.com/culture/can-nostr-grow-to-twitter-size">Shinobi:Nostr Scale,2023</a>)。在Nostr生态系统中，由于客户端通常缺乏稳定的收入或资金支持，使得为Relay提供有效激励变得困难。多数Relay依靠个人兴趣或限制性的<a href="(https://github.com/relaytools/relaycreator/blob/f253d2aa81bf385816f750f730c687c96b61ce6e/design/UserStories.md)">付费模型</a>维持运营，这种模型限制了特定用户的写入甚至读取权限，与抗审查的初衷相悖，同时削弱了客户端与Relay之间的经济互动。目前，95%的Relay的收入都难以负担运营成本。有20%的中继经历了实质性的停机时间(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://arxiv.org/html/2402.05709v1#S6">Gareth Tyson et al., 2024</a>)。缺乏资金支持而导致的低可用性以及可能随后导致中继关闭。</li>
+<li>中继的发现和关注机制导致使用率较高的Relay更容易被用户发现，而这些Relay往往由知名的客户端或开发者运营，从而进一步吸引更多用户使用。让更多的小relay 被广泛的发现和使用是确保Relay网络抗审查和活跃的主要因素。Nostr生态系统正在通过<a target="_blank" rel="noopener external nofollow noreferrer" href="https://fiatjaf.com/bc63c348b.html">Gossip Model</a>, <a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/article/naddr1qq2hxenh2cchynnpdag4sepkx4gxyj2dt9nk6q3qjlrs53pkdfjnts29kveljul2sm0actt6n8dxrrzqcersttvcuv3qxpqqqp65wd3a9ny">Outbox model</a>, 和<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/MutinyWallet/blastr">Blastr</a>.来改进中继的发现和关注机制。这些模型的关键或者难点在于帖子在不同中继之间不被“过度复制及重复检索”的情况下，优化中继用户之间的可发现性和覆盖范围，以确保内容的广泛传播(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/article/naddr1qq2hxenh2cchynnpdag4sepkx4gxyj2dt9nk6q3qjlrs53pkdfjnts29kveljul2sm0actt6n8dxrrzqcersttvcuv3qxpqqqp65wd3a9ny">Hodlbod:Outbox,2024</a>)。然而，要达成这一目标，需要Nostr的开发人员有更好的合作和共识。目前，由于缺乏足够的激励，Nostr开发者更多关注自己的客户端设计思路，而忽略了效率及兼容性实现各种已存在的用户类型，甚至对其他客户端开发造成混乱。</li>
+</ul>
+<h2 id="三、中继网络的可能经济激励模型">三、中继网络的可能经济激励模型</h2>
+<p>解决Relay网络可用性的关键在于明确谁将持续支付其运营费用。只有当中继网络能够实现盈利或至少覆盖运营成本时，才能保持长期的规模化和繁荣。运行一个Relay的主要成本源自服务器存储费用。为了保障内容的可用性，内容会被同时发布并在多个中继之间重复检索(<a target="_blank" rel="noopener external nofollow noreferrer" href="https://bitcoinmagazine.com/technical/what-makes-nostr-a-different-social-platform">Shinobi:Relay,2023</a>)，这会进一步增加流量消耗和运营成本，但却是去中心化和确保数据可靠性的关键。目前，Relay的主要收入来源是捐赠和付费发布，但有95%的Relay难以仅凭出版捐赠来维持其运营成本。因此，本章将主要探讨可能的解决方案，以覆盖Relay的运营成本。</p>
+<ol>
+<li>客户端支付存储成本<br>
+由客户端构建付费产品或通过财务预算来支付Relay的存储成本是符合市场需求及用户习惯，如<a href="%5Bhttps:/%5D(https://hackmd.io/_uploads/SJgPSXCWC.png)">图6</a> 所示。这将会促进客户端多样化探索去中心化媒体的货币化，同时有助于形成Relay与客户端之间的经济共识，建立Relay的激励模型。</li>
+</ol>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F6.png" alt="" loading="lazy"><figcaption>Figure 6.客户端与Relay之间激励</figcaption></figure>
+<p>在前一篇文章中，我们讨论了YakiHonne实现<a href="https://research.dorahacks.io/2023/12/12/two-pillars/">去中心化媒体的2大支柱</a>：去中心化出版和去中心化审查。前者保证内容永不丢失；后者创造了一种新的成本激励模型，确保在内容和审核变得无需权限时，平台仍能维持真实性和成本效益。现在，YakiHonne已经支持<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/articles">长文</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/flash-news">快讯</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/curations">策展</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/videos">视频</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/uncensored-notes">抗审查笔记 (Uncensored Notes)</a>等多种内容形式的去中心化出版。通过抗审查笔记对内容审核，进一步促进了YakiHonne的货币化和去中心化。在YakiHonne，每发布一条快讯至少需支付800 sats，部分收入可用于激励Relay的运营和社区笔记。长文内容形式则可以通过订阅、广告甚者客户端的财务预算来支付Relay的存储费，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F7.png">图7</a>所示。</p>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F7.png" alt="" loading="lazy"><figcaption>图7.YakiHonne对Relay的激励</figcaption></figure>
+<ol start="2">
+<li>Relay的直接收入<br>
+在 Nostr 中，中继的发展更多是侧重于性能优化，而不是新功能的开发。中继也许可以通过提供特定功能、存储不同类型的事件来促进收入。通过特定功能赚取收入需要客户端和中继的广泛采用，否则可能会导致中心化风险或实施失败 (<a target="_blank" rel="noopener external nofollow noreferrer" href="https://yakihonne.com/article/naddr1qqxnzdesxqcn2df5xymnzdp4qgsf03c2gsmx5ef4c9zmxvlew04gdh7u94afnknp33qvv3c94kvwxgsrqsqqqa28q3wd45">Hodlbod: relay Function,2023 </a>)。Relay存储不同类型事件来获取收入或许是一个可行方案。在保持对各种内容的开放性的同时，中继可以在数据检索时使用关键词过滤器来显示特定主题，从而促进基于订阅的付费模式。此外，Relay和客户端可以就订阅费用形成分成协议，这不仅有助于增加收入，还能促进双方在经济上达成共识。</li>
+</ol>
+<h2 id="四、Relay内容的证明">四、Relay内容的证明</h2>
+<p>数据在多个Relay上的重复存储和检索设计确保了内容的高可用性，但并不能完全保证内容的不可篡改性。理论上仍可以通过影响某些Relay节点来篡改或删除信息。为了解决这一问题，我们需要为现在的中继系统引入一种互补的证明机制，来增强内容的可靠性。</p>
+<p>有多种方法可以实现这种证明。作为最去中心化的社交媒体底层协议，Nostr在比特币社区中得到了广泛认可。然而，技术上使用比特币网络来验证信息的讨论尚未展开。如果需要对 Nostr 网络上托管的内容进行证明，应该在比特币网络上进行。</p>
+<p>为了在 Nostr 中继网络上证明和验证大量内容，在比特币网络上证明每一个帖子或每一篇 文章（<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/nostr-protocol/nips/blob/master/23.md">Nip-23</a>）在经济上是不可行的。在进行证明之前，数据应该被压缩和有效组织。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://en.wikipedia.org/wiki/Merkle_tree">默克尔树</a>是一种高效且安全的数据验证机制。数据的准确性可以仅通过默克尔根和相关的哈希路径来验证，如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F8.png">图8</a>所示。因此，对大量内容的最终认证可以是向比特币网络提交一个默克尔根。一旦提交，所有在此默克尔根下表示的内容都将变得不可更改。</p>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F8.png" alt="" loading="lazy"><figcaption>图8. 默克尔树上哈希处理的内容</figcaption></figure>
+<p>当需要验证存储在中继上的内容是否未被篡改时，首先从中继检索内容并重新计算其哈希值。然后，使用这个哈希值和其他相关的中间哈希值，验证过程沿着默克尔树向上进行，直到达到记录在比特币区块链上的默克尔根。最后，通过将这个计算出的默克尔根与区块链上记录的根哈希进行比较，确认内容的完整性和真实性。该过程如<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacksglobal.github.io/images/image/20240430_F9.png">图9</a>所示。</p>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20240430_F9.png" alt="" loading="lazy"><figcaption>图9. Relay上内容的证明</figcaption></figure>
+<p>重复这个过程将最终确保所有经过证明的内容都是真实的。结果，中继将提供内容的可用性和冗余，同时比特币网络将批量验证Nostr内容。</p>
+<h2 id="五、结论">五、结论</h2>
+<p>Relay 网络是 YakiHonne 构建去中心化媒体的核心基础设施之一。通过对 Nostr 的去中心化特性进行数据分析，发现 Nostr 的技术架构已使其成为目前最具去中心化特点的媒体协议。然而，Relay 网络目前面临着可用性挑战，主要因为缺乏有效的经济激励。本文探讨了几种可能的Relay经济激励模型，尽管这些模型存在许多不确定性和挑战，但明确了持续激励的对抗审查网络的重要性。此外，考虑到 Relay 网络当前缺乏不可篡改性，我们提出证明机制以提高Relay系统的可靠性。通过改进 Relay 的可靠性和可用性，将有助于促进整个中继生态系统的可扩展性和繁荣，为构建去中心化媒体提供坚实的支持。</p>
+</section><nav class="post-category aside-category"><h5 class="aside-caption">Categories</h5><ul class="aside-category-list"><li class="aside-category-item"><a href="../../../../category/chinese/">中文</a></li></ul></nav><nav class="post-share aside-share"><h5 class="aside-caption">Share</h5><ul class="aside-share-list"><li class="aside-share-item"><a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fresearch.dorahacks.io%2F2024%2F04%2F30%2Fnostr-relay-incentive-zh%2F&amp;text=Nostr%E4%B8%AD%E7%BB%A7%E7%BD%91%E7%BB%9C%E7%9A%84%E5%8F%AF%E7%94%A8%E6%80%A7%E5%92%8C%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%BC%98%E5%8C%96%2C%20by%20WendyDing%20%40YakiHonne.com" rel="external nofollow noreferrer" target="_blank">Twitter</a></li><li class="aside-share-item"><a href="https://t.me/share/url?url=https%3A%2F%2Fresearch.dorahacks.io%2F2024%2F04%2F30%2Fnostr-relay-incentive-zh%2F&amp;text=Nostr%E4%B8%AD%E7%BB%A7%E7%BD%91%E7%BB%9C%E7%9A%84%E5%8F%AF%E7%94%A8%E6%80%A7%E5%92%8C%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%BC%98%E5%8C%96%2C%20by%20WendyDing%20%40YakiHonne.com" rel="external nofollow noreferrer" target="_blank">Telegram</a></li><li class="aside-share-item"><a class="aside-share-copylink" href="javascript:void(0)" rel="external nofollow noreferrer" data-link="https://research.dorahacks.io/2024/04/30/nostr-relay-incentive-zh/" data-labelsuccess="Copied"><span>Copy Link</span></a></li></ul></nav><nav class="post-brand aside-brand brand"><div class="brand-main"><a href="/">Dora Research <span class="brand-sub">Blog</span></a></div></nav><aside class="post-credit aside-credit"><p class="aside-credit-info"><a href="/">A Dora Community Website</a></p></aside><footer class="post-link aside-link"><ul class="aside-link-list"><li class="aside-link-item"><a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacks.io/">DoraHacks</a></li><li class="aside-link-item"><a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorafactory.org/">Dora Factory</a></li><li class="aside-link-item"><a href="mailto:Dora Recruiting &lt;recruiting@dorafactory.org&gt;?subject=Job%20Application%3A%20Role%20(Location%2FRemote)%20%7C%20FullName&amp;body=%23%23%23%201)%20About%20you%20(brief)%0A%0A-%20Current%20role%2Ftitle%3A%0A-%20Areas%20of%20expertise%20(2%E2%80%934%20keywords)%3A%0A-%20What%20you%E2%80%99re%20looking%20for%20(role%20type%2C%20full-time%2Fcontract%2C%20remote%2Fon-site%2C%20location%2Ftimezone)%3A%0A-%20Why%20you%E2%80%99re%20interested%20in%20our%20team%2Fcompany%20(1%E2%80%933%20sentences)%3A%0A%0A%23%23%23%202)%20Most%20challenging%2Fimportant%20problem%20you%20solved%20(detailed)%0A%0ADescribe%20the%20most%20challenging%20and%2For%20most%20important%20problem%20you%20solved%2C%20in%20great%20detail.%0A%0A-%20Context%20(situation%2C%20why%20it%20mattered)%3A%0A-%20The%20problem%20(what%20was%20hard%2Funclear%3B%20constraints%2Funknowns%2Ftrade-offs)%3A%0A-%20Your%20role%20(what%20you%20owned%20vs.%20team)%3A%0A-%20Approach%20(how%20you%20broke%20it%20down%3B%20what%20you%20prioritized%20first)%3A%0A-%20Execution%20(key%20decisions%3B%20failures%2Fiterations)%3A%0A-%20Result%20(outcomes%2C%20measurable%20impact)%3A%0A-%20Learnings%20(what%20you%E2%80%99d%20do%20differently%2C%20why)%3A%0A%0A%23%23%23%203)%20Contrarian%20thesis%20(detailed)%0A%0ADescribe%20a%20thesis%20related%20to%20your%20area%20of%20research%20or%20industry%20that%20you%20believe%20is%20true%2C%20despite%20widespread%20disagreement.%0A%0A-%20The%20thesis%20(one%20sentence)%3A%0A-%20Why%20you%20believe%20it%E2%80%99s%20true%20(evidence%2C%20reasoning%2C%20experience)%3A%0A-%20What%20most%20people%20get%20wrong%20(common%20assumptions%20to%20challenge)%3A%0A-%20Implications%20(how%20it%20changes%20decisions%2C%20product%20strategy%2C%20research%20direction%2C%20etc.)%3A%0A-%20A%20concrete%20example%20(case%20study%2C%20experiment%2C%20or%20scenario)%3A%0A%0A%23%23%23%204)%20Links%0A%0A-%20LinkedIn%3A%20%5BURL%5D%0A-%20Portfolio%2FGitHub%3A%20%5BURL%5D" rel="external nofollow noreferrer">Jobs</a></li></ul></footer></article></main><script type="text/javascript" src="../../../../assets/app.js?v=0.10.0"></script></body></html>
