@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "research.dorahacks.io" }],
+      "destination": "https://dora.ventures/research",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "research.dorahacks.io" }],
+      "destination": "https://dora.ventures/research/:path*",
+      "permanent": true
+    }
+  ]
+}
