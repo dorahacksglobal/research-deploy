@@ -1,0 +1,797 @@
+<!DOCTYPE html><html lang="en" prefix="og: http://ogp.me/ns#"><head><meta charset="utf-8"><title>Dora Vota Post-Quantum Consensus Benchmark: Transaction Confirmation and Node Load · VegeBun · Dora Research Blog</title><meta name="title" content="Dora Vota Post-Quantum Consensus Benchmark: Transaction Confirmation and Node Load · VegeBun · Dora Research Blog"><meta name="description" content="Benchmarking ML-DSA transactions on Dora Vota network."><meta name="keywords" content="doraresearch,dora,research,hackathon,dao,governance,economics,blockchain,hackerlink,quadratic,continuous,funding,daorayaki,english,chinese"><meta name="viewport" content="width=device-width, viewport-fit=cover,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Dora Research"><meta name="theme-color" content="#110920"><meta name="format-detection" content="telephone=no"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><link rel="shortcut icon" href="/assets/favicon.ico?v=0.10.0"><link rel="icon" sizes="16x16 24x24 32x32 48x48 64x64" href="/assets/favicon.ico?v=0.10.0"><link rel="icon" sizes="128x128" href="/assets/favicon-128.png?v=0.10.0"><link rel="icon" sizes="192x192" href="/assets/favicon-192.png?v=0.10.0"><link rel="icon" sizes="196x196" href="/assets/favicon-196.png?v=0.10.0"><link rel="apple-touch-icon" href="/assets/favicon-180.png?v=0.10.0"><link rel="apple-touch-icon" sizes="120x120" href="/assets/favicon-120.png?v=0.10.0"><link rel="apple-touch-icon" sizes="152x152" href="/assets/favicon-152.png?v=0.10.0"><link rel="apple-touch-icon" sizes="167x167" href="/assets/favicon-167.png?v=0.10.0"><link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180.png?v=0.10.0"><meta name="msapplication-TileColor" content="#110920"><meta name="msapplication-TileImage" content="/assets/favicon-144.png?v=0.10.0"><meta name="application-name" content="Dora Research"><meta name="msapplication-tooltip" content="Dora Research"><meta name="msapplication-config" content="/assets/ieconfig.xml?v=0.10.0"><link rel="manifest" href="/assets/manifest.json?v=0.10.0"><link rel="preload" href="/assets/IBMPlexSans-Text.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/IBMPlexSans-TextItalic.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/IBMPlexSans-SemiBold.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/IBMPlexSans-SemiBoldItalic.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/IBMPlexSans-Bold.woff2?v=3.004" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/IBMPlexSans-BoldItalic.woff2?v=3.004" as="font" type="font/woff2" crossorigin><meta property="og:type" content="blog"><meta property="og:locale" content="en"><meta property="og:image" content="https://research.dorahacks.io/assets/og-image.png?v=0.10.0"><meta property="og:site_name" content="Dora Research"><meta property="og:title" content="Dora Vota Post-Quantum Consensus Benchmark: Transaction Confirmation and Node Load"><meta property="og:url" content="https://research.dorahacks.io/2026/11/15/pqc-consensus-benchmark/"><meta property="og:description" content="Benchmarking ML-DSA transactions on Dora Vota network."><meta property="article:published_time" content="2026-11-15T00:00:00.000Z"><meta property="article:modified_time" content="2026-11-15T00:00:00.000Z"><meta property="article:author" content="VegeBun"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@DoraFactory"><link rel="stylesheet" href="/assets/app.css?v=0.10.0"><script async src="https://www.googletagmanager.com/gtag/js?id=G-1H2ZDKGN1G"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-1H2ZDKGN1G');
+gtag('config', 'G-25T206R38K');</script><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body class="post"><main role="main"><article class="post-article grid-main"><header class="post-header typography typography--en"><h1 class="post-title">Dora Vota Post-Quantum Consensus Benchmark: Transaction Confirmation and Node Load</h1><div class="post-metadata"><p class="post-date"><time datetime="2026-11-15T00:00:00.000Z">15 Nov 2026</time></p><p class="post-author">VegeBun</p></div></header><section class="post-body typography typography--en" lang="en"><p>Following the rotation of active validators’ consensus keys to <a target="_blank" rel="noopener external nofollow noreferrer" href="https://csrc.nist.gov/pubs/fips/204/final">ML-DSA</a> on the Dora Vota long-running testnet, we conducted four rounds of transaction load testing. ML-DSA is a post-quantum digital signature algorithm used by validators to sign <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/cometbft/cometbft/blob/v0.38.26/spec/consensus/consensus.md">consensus votes</a>. The benchmark covered conventional transactions signed using ECDSA over the <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.secg.org/sec2-v2.pdf">secp256k1</a> elliptic curve and native transactions signed using ML-DSA.</p>
+<p><strong>Across four rounds and 32 regular-load stages, all 360,000 planned transactions were successfully executed and confirmed.</strong> Conventional accounts completed 240,000 transactions, and native ML-DSA accounts completed 120,000. No transactions were rejected during <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/cometbft/cometbft/blob/v0.38.26/spec/abci/abci%2B%2B_methods.md#checktx">mempool admission checks (CheckTx)</a>, and none remained unconfirmed at the reporting cutoff in these regular-load stages.</p>
+<h2 id="Testnet-Validator-Consensus-Signatures">Testnet Validator Consensus Signatures</h2>
+<p><strong>At block 15867387, all 14 active validators used ML-DSA-65 consensus keys, representing 100% of the active set’s voting power.</strong></p>
+<p>Explore: <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking">testnet explorer · validator list</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-rpc.dorafactory.org/validators?height=15867387&amp;per_page=100&amp;page=1">consensus validator set at block 15867387</a>. Validator names link to their explorer pages.</p>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:60%;">
+    <col style="width:40%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Active validator
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Consensus signature type
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1asf76u4dw6e2sj7ep4urk6lw8v8pqhv2nlc05s">dorafactory-new</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper16yazemxnx6kk9gcv9wpujk6e27v78ttsjraq0z">ITRocket</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1q8sgeajxemz2rawe7rr6ln4lfvvxpqwn3prvcp">Nodes.Guru</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper179y7gcp2cl4glndx8w669dvcthsuwnh3ltzmrh">StakeUp</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1ga8cqdjne2ll6gxgpc3j02an0sapdm0qp5r4v0">🔥STAVR🔥</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper106tql6njfphxegj97n0hczkte3zgcsqwm466dw">BlockPro</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper16kvj2qax8ayqqk2t8jczrsfcdgjgr3h2pt3arn">Perfect-nodes</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1mxzjdyqpglsdnhxm5nknmj0m68fh4q85mugx0q">breskulpeak.com</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper140pkd89gap40w83d27t8ywny3sqlewucf58mj7">👋 79anvi 🍀</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper14yxs5p9w6uj3ls7utd8502x5ym52aexwaspwhv">Oxistake</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1sr3zts0emnthcrftf8evz335w02873w2hlqtdu">Moon Core</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1l6jlau2hcfxgxg27w994my0klpswslvtf2r6uc">[NODERS]</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1gjk9yl4r5gvavn50q86numvj3xyrcj34sj6lel">ruangnode</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;">
+        <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vota-testnet-explorer.dorafactory.org/doravotatestnet/staking/doravaloper1zzy8yf8jgga7fv57x9np7j6mvwp0hhjdqytcyk">linkednode</a>
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA-65</td>
+    </tr>
+  </tbody>
+</table>
+<p><em>The active validator list reflects block 15867387. Explorer pages provide live status.</em></p>
+<h2 id="Test-Environment-and-Methodology">Test Environment and Methodology</h2>
+<p>The evaluation compares one pre-upgrade baseline run with four post-upgrade runs on the long-running testnet. The upgrade changed both software and validator consensus keys. The comparison captures the overall performance of these two operating environments.</p>
+<p>Each transaction contained one <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/cosmos/cosmos-sdk/blob/v0.50.13/x/bank/README.md#msgsend"><code>MsgSend</code></a> message with the same sender and recipient address. Conventional accounts used ECDSA signatures over secp256k1, while native ML-DSA accounts used ML-DSA signatures. The two account types were tested in separate stages on the same network, whose validators used ML-DSA consensus signatures after the upgrade.</p>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:40%;">
+    <col style="width:60%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Item
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Configuration
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Network
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Dora Vota long-running testnet, <code>vota-testnet</code>
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Transaction type
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        One self-transfer message (<code>MsgSend</code>) per transaction
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Regular target rates: conventional accounts
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        100 / 200 / 300 / 400 transactions per second
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Regular target rates: ML-DSA accounts
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        50 / 100 / 150 / 200 transactions per second
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Submission plan
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Target rate × 60 seconds per stage; actual submission took approximately 60–76 seconds
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Monitoring
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        One validator, one RPC node, and one archive node, sampled every 10 seconds
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Load generator
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Hosted on the same machine as the RPC node
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>The load generator stopped submitting transactions if it fell approximately 20 seconds behind schedule or a test account ran out of funds. Neither condition interrupted the post-upgrade regular-load stages. A separate safeguard stopped load generation if the block interval exceeded 20 seconds. For each post-upgrade regular target-rate tier, the mean block interval observed at the monitored validator, averaged across four runs, was approximately 5.5–6.5 seconds. No recorded stop was attributed to this safeguard. Stop reasons for the 800-transactions-per-second stages are listed separately below.</p>
+<p>Eight additional stress stages targeted 800 transactions per second. Their results are excluded from the regular-load completion totals.</p>
+<h3 id="Hardware-and-Service-Resource-Limits">Hardware and Service Resource Limits</h3>
+<p>All three monitored servers used the same hardware: <strong>an Intel Core Ultra 7 265 with 20 logical CPUs, 64 GB of DDR5-5600 memory, and two approximately 1 TB Micron 3500 NVMe SSDs in RAID 1</strong>. Each physical network interface had a <strong>1 Gbit/s</strong> link speed.</p>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:20%;">
+    <col style="width:38%;">
+    <col style="width:22%;">
+    <col style="width:20%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Node
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Role
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Node service CPU quota
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Node service memory limit
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Validator
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Participate in consensus and execute transactions
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        Equivalent to 4 cores of CPU time
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        12 GiB
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        RPC
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Accept transactions and serve queries; share the host with the load generator
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        Equivalent to 8 cores of CPU time
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        24 GiB
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Archive
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Retain historical state and serve historical queries
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        No service-level limit configured
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        No service-level limit configured
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>The <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html#CPUQuota=">CPU quotas</a> limit the CPU time available to each service; they do not dedicate physical cores. The load generator shared the RPC host but was outside the chain service's 8-core quota.</p>
+<h2 id="Transaction-Completion">Transaction Completion</h2>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:19%;">
+    <col style="width:18%;">
+    <col style="width:19%;">
+    <col style="width:25%;">
+    <col style="width:19%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Account type
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Confirmed across four runs
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Highest regular target rate
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Observed send rate at that target
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Confirmed per run at that target
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Conventional
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        240,000
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        400 tx/s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        318.5–362.8 tx/s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        24,000 / 24,000
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Native ML-DSA
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        120,000
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        200 tx/s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        164.3–178.7 tx/s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        12,000 / 12,000
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>Target rates define the submission schedule. Observed send rates are calculated by dividing submitted transaction counts by actual submission durations; they measure load-generator output, not sustained on-chain throughput.</p>
+<p>Before the upgrade, the conventional 400 tx/s stage reached the submission-lag safeguard after sending 23,938 transactions. The remaining 62 transactions were never sent; all submitted transactions were confirmed. After the upgrade, all four runs at this target completed the planned 24,000 transactions.</p>
+<p>Changes varied by target rate. At the conventional 100 tx/s target, observed send rates changed from 94.6 tx/s in the baseline to 82.4–89.0 tx/s after the upgrade. At the 400 tx/s target, they changed from 299.3 tx/s to 318.5–362.8 tx/s. Every post-upgrade regular stage completed its planned transaction count.</p>
+<h2 id="Observed-Transaction-Confirmation-Latency">Observed Transaction Confirmation Latency</h2>
+<p>At the 200 tx/s target, both account types completed 12,000 transactions per run at similar observed send rates: 168.7 tx/s for conventional accounts and 172.2 tx/s for native ML-DSA accounts, averaged across four runs.</p>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:50%;">
+    <col style="width:25%;">
+    <col style="width:25%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Metric
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Conventional accounts
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Native ML-DSA accounts
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Mean observed send rate
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        168.7 tx/s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        172.2 tx/s
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Successfully confirmed per run
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        12,000
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        12,000
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Mean per-run p50 confirmation latency
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        6.0 s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        18.5 s
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Mean per-run p95 confirmation latency
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        10.0 s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        26.5 s
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Four-run mean block interval at the monitored validator
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        Approximately 5.5 s
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        Approximately 6.5 s
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc262.htm">p50 and p95 are percentiles</a>. The p50 is the median confirmation time. A run's p95 is the time within which 95% of its successful transactions were observed as confirmed. The latency values shown here are averages of four per-run percentiles, not percentiles calculated from a pooled transaction sample. Confirmation is recorded when a query detects the committed transaction, so these measurements include confirmation-query delay.</p>
+<p>At this target, the mean per-run p95 for native ML-DSA transactions was approximately <strong>2.65 times</strong> that for conventional transactions. Before the upgrade, the corresponding p95 values were already approximately <strong>12 seconds and 26 seconds</strong>. The difference in confirmation latency between transaction types appears in both the pre-upgrade and post-upgrade results. At the 100 tx/s target, mean per-run p95 values were closer: <strong>9.0 seconds</strong> for conventional transactions and <strong>11.0 seconds</strong> for ML-DSA. The gap in tail confirmation latency widened at the higher load.</p>
+<h2 id="Node-Load-and-Transaction-Size">Node Load and Transaction Size</h2>
+<p>Across the regular-load stages, the highest sampled chain-process CPU usage was <strong>1.97 cores on the validator, 2.99 cores on the RPC node, and 1.61 cores on the archive node</strong>. Validator and RPC samples remained below their respective 4-core and 8-core service quotas. The validator's 1.97-core value was a single 10-second sample; adjacent samples were approximately 1 core.</p>
+<p>At the shared 100 tx/s target, ML-DSA stages had substantially higher sampled peak network transmit rates:</p>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:20%;">
+    <col style="width:40%;">
+    <col style="width:40%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Node
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Conventional / ML-DSA chain-process CPU (cores)
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Conventional / ML-DSA network transmit rate (MiB/s)
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Validator
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        0.69 / 0.85
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        0.75 / 9.41
+      </td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        RPC
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        0.98 / 1.61
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        4.63 / 27.94
+      </td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">
+        Archive
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        0.61 / 1.12
+      </td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">
+        1.81 / 21.14
+      </td>
+    </tr>
+  </tbody>
+</table>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20261115-image-1.png" alt="" loading="lazy"><figcaption>Chain-process CPU and network transmit rates for conventional and ML-DSA accounts at a 100 tx/s target</figcaption></figure>
+<p><em>The table and chart show the mean of four per-run sampled peaks for each metric, using 10-second sampling. These are not time-averaged resource usage values. CPU usage is expressed in equivalent fully utilized cores; network transmit rates cover the host interface.</em></p>
+<p>Conventional and native ML-DSA stages had mean observed send rates of 86.7 and 95.8 tx/s, respectively. Interface measurements cover transaction propagation, consensus messages, and other communication.</p>
+<p>In the baseline sample, a conventional transaction was <strong>323 bytes</strong>, compared with <strong>5,491 bytes</strong> for a native ML-DSA transaction—a <strong>17-fold</strong> difference.</p>
+<p>Block assembly follows protocol parameters including <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/cometbft/cometbft/blob/v0.38.26/spec/abci/abci%2B%2B_app_requirements.md#gas">gas limits</a> and <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/cometbft/cometbft/blob/v0.38.26/spec/core/data_structures.md#blockparams">block byte limits</a>. Across the four post-upgrade runs, the largest observed number of test transactions in a single block was <strong>4,000 for conventional transactions</strong> and <strong>1,034 for ML-DSA transactions</strong>. At higher loads, multiple blocks contained 1,034 ML-DSA test transactions, with fewer test transactions per block than observed for conventional transfers.</p>
+<h2 id="High-Load-Behavior">High-Load Behavior</h2>
+<p>All eight stages targeting 800 tx/s ended early. Stop reasons included depleted test-account balances, confirmation-query timeouts, and excessive submission lag. Mempools—the queues of transactions awaiting block inclusion—on all three monitored nodes reached <strong>5,000 transactions</strong> during these stress stages. These stages show transaction backlog and load-generator stop conditions under high load. Per-stage results appear in the appendix.</p>
+<h2 id="Appendix-Stage-Results-and-Measurement-Definitions">Appendix: Stage Results and Measurement Definitions</h2>
+<h3 id="Regular-Load-Submission-and-Confirmation">Regular-Load Submission and Confirmation</h3>
+<p>The table summarizes send rates and confirmation counts before and after the upgrade. The following chart compares those send rates and the observed p95 confirmation latencies; its horizontal bars show variation across runs, not confidence intervals.</p>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:20%;">
+    <col style="width:16%;">
+    <col style="width:25%;">
+    <col style="width:23%;">
+    <col style="width:16%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Account / target rate (tx/s)
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Pre-upgrade send rate
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Post-upgrade send rate: mean (min–max)
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Post-upgrade confirmed / planned per run
+      </th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">
+        Confirmed across four runs
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional 100</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">94.6</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">86.7 (82.4–89.0)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">6,000 / 6,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">24,000</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional 200</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">185.1</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">168.7 (157.9–185.6)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">12,000 / 12,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">48,000</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional 300</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">237.1</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">254.0 (240.2–262.5)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">18,000 / 18,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">72,000</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional 400</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">299.3</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">346.0 (318.5–362.8)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">24,000 / 24,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">96,000</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA 50</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">46.8</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">48.4 (46.7–50.0)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">3,000 / 3,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">12,000</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA 100</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">100.0</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">95.8 (92.9–99.3)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">6,000 / 6,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">24,000</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA 150</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">144.4</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">133.6 (125.3–145.0)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">9,000 / 9,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">36,000</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA 200</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">163.6</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">172.2 (164.3–178.7)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">12,000 / 12,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">48,000</td>
+    </tr>
+    <tr style="background-color:#ffffff;font-weight:700;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;"><strong>Total</strong></td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">—</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">—</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;"><strong>90,000 / 90,000</strong></td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;"><strong>360,000</strong></td>
+    </tr>
+  </tbody>
+</table>
+<figure><img src="https://dorahacksglobal.github.io/images/image/20261115-image-2.png" alt="" loading="lazy"><figcaption>Observed send rates and p95 confirmation latency before and after the upgrade</figcaption></figure>
+<p><em>Blue points show post-upgrade means across four runs; horizontal bars show the minimum-to-maximum range. Orange points show the single pre-upgrade baseline run. Conventional accounts are labeled secp256k1 in the charts.</em></p>
+<h3 id="Stages-Targeting-800-Transactions-per-Second">Stages Targeting 800 Transactions per Second</h3>
+<br> 
+<table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:12pt;">
+  <colgroup>
+    <col style="width:15%;">
+    <col style="width:12%;">
+    <col style="width:13%;">
+    <col style="width:13%;">
+    <col style="width:17%;">
+    <col style="width:30%;">
+  </colgroup>
+  <thead>
+    <tr style="background-color:#ffffff;">
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">Account</th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">Run</th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">Submitted</th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">Confirmed</th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">Unknown at cutoff</th>
+      <th style="border:0.5pt solid #cccccc;padding:12px;text-align:center;vertical-align:middle;font-weight:700;color:#000000;">Stop reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">1</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">26,369</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">22,569</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">2,493</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Insufficient test-account funds</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">2</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">29,759</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">26,348</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">2,846</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Insufficient test-account funds</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">3</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">23,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">20,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">1,704</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Confirmation-query timeout</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Conventional</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">4</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">26,564</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">23,241</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">2,165</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Insufficient test-account funds</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">1</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">14,617</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">9,617</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">4,766</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Approximately 20.9 s behind the submission schedule</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">2</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">15,688</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">10,688</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">4,988</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Approximately 20.8 s behind the submission schedule</td>
+    </tr>
+    <tr style="background-color:#ffffff;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">3 (makeup)</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">16,044</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">11,044</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">5,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Approximately 23.6 s behind the submission schedule</td>
+    </tr>
+    <tr style="background-color:#f6f8fa;">
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">ML-DSA</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">4</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">15,170</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">10,170</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;text-align:right;vertical-align:middle;color:#1f2328;">5,000</td>
+      <td style="border:0.5pt solid #cccccc;padding:10px 12px;vertical-align:middle;color:#1f2328;">Approximately 20.2 s behind the submission schedule</td>
+    </tr>
+  </tbody>
+</table>
+<p><code>Unknown</code> denotes an outcome unconfirmed at the reporting cutoff. The eight stress stages recorded <strong>28,962 unknown outcomes</strong>. Submitted totals also exceed the combined confirmed, unknown, and mempool-admission rejection counts by <strong>4,572 transactions</strong>, whose final outcomes have not been individually verified. Stress-stage results are presented using these classifications.</p>
+<h3 id="Measurement-Notes">Measurement Notes</h3>
+<ul>
+<li>Hardware and service quotas were checked after testing. The opening active-validator list reflects a separately queried block height.</li>
+<li>Account sequence checks matched in every regular-load stage, totaling 360,000 completed transactions across 32 stages.</li>
+<li>Latency statistics cover successful transactions. Percentiles are calculated per run and then averaged across four runs. Timing ends when confirmation is observed through a query, incorporating queueing, processing, and confirmation-query waits.</li>
+<li>Block intervals are stage averages. Resources were sampled every 10 seconds until 15 seconds after submission ended; reported peaks are sampled peaks.</li>
+<li>RPC chain-process CPU is measured separately, while the load generator and node share host resources.</li>
+<li>RPC monitoring was interrupted for approximately 23 minutes after the conventional-account portion of the third run. Its ML-DSA portion was completed in a separate time window, and missing samples remain missing.</li>
+<li>The evaluation uses one pre-upgrade baseline and four post-upgrade runs, with actual submission windows of approximately 60–76 seconds per regular stage.</li>
+</ul>
+<h2 id="Conclusion">Conclusion</h2>
+<p><strong>Under the regular loads tested, the Dora Vota long-running testnet successfully processed and confirmed all 360,000 planned transfers, including 120,000 native ML-DSA transactions. These results demonstrate the existing nodes' ability to support native ML-DSA transfers within the evaluated load range.</strong></p>
+<p>Both conventional and native ML-DSA accounts completed every regular-load stage. At mean send rates of approximately 169–172 tx/s, their mean per-run p95 confirmation latencies were <strong>10.0 seconds and 26.5 seconds</strong>, respectively. Native ML-DSA transactions were <strong>17 times the size</strong> of conventional transactions in the baseline sample and generated more network traffic during testing, with longer confirmation waits at higher loads.</p>
+<p>During regular-load testing, sampled CPU peaks were <strong>1.97 cores on the validator and 2.99 cores on the RPC node</strong>, below their respective service quotas. <strong>Both conventional and native ML-DSA transfers completed their respective regular-load tests on a network using ML-DSA validator consensus signatures.</strong></p>
+</section><nav class="post-category aside-category"><h5 class="aside-caption">Categories</h5><ul class="aside-category-list"><li class="aside-category-item"><a href="/category/privacy-simulations/">Privacy &amp; Simulations</a></li><li class="aside-category-item"><a href="/category/english/">English</a></li><li class="aside-category-item"><a href="/category/frontier-dao/">Frontier DAO</a></li></ul></nav><nav class="post-share aside-share"><h5 class="aside-caption">Share</h5><ul class="aside-share-list"><li class="aside-share-item"><a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fresearch.dorahacks.io%2F2026%2F11%2F15%2Fpqc-consensus-benchmark%2F&amp;text=Dora%20Vota%20Post-Quantum%20Consensus%20Benchmark%3A%20Transaction%20Confirmation%20and%20Node%20Load%2C%20by%20VegeBun" rel="external nofollow noreferrer" target="_blank">Twitter</a></li><li class="aside-share-item"><a href="https://t.me/share/url?url=https%3A%2F%2Fresearch.dorahacks.io%2F2026%2F11%2F15%2Fpqc-consensus-benchmark%2F&amp;text=Dora%20Vota%20Post-Quantum%20Consensus%20Benchmark%3A%20Transaction%20Confirmation%20and%20Node%20Load%2C%20by%20VegeBun" rel="external nofollow noreferrer" target="_blank">Telegram</a></li><li class="aside-share-item"><a class="aside-share-copylink" href="javascript:void(0)" rel="external nofollow noreferrer" data-link="https://research.dorahacks.io/2026/11/15/pqc-consensus-benchmark/" data-labelsuccess="Copied"><span>Copy Link</span></a></li></ul></nav><nav class="post-brand aside-brand brand"><div class="brand-main"><a href="/">Dora Research <span class="brand-sub">Blog</span></a></div></nav><aside class="post-credit aside-credit"><p class="aside-credit-info"><a href="/">A Dora Community Website</a></p></aside><footer class="post-link aside-link"><ul class="aside-link-list"><li class="aside-link-item"><a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorahacks.io/">DoraHacks</a></li><li class="aside-link-item"><a target="_blank" rel="noopener external nofollow noreferrer" href="https://dorafactory.org/">Dora Factory</a></li></ul></footer></article></main><script type="text/javascript" src="/assets/app.js?v=0.10.0"></script></body></html>
